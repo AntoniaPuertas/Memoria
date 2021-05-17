@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Memoria</string>
+    <string name="jugar">Jugar</string>
+    <string name="salir">Salir</string>
+    <string name="imagen">Imagen</string>
+    <string name="reiniciar">Reiniciar</string>
+    <string name="puntuacion">Puntuación: </string>
+</resources>
