@@ -1,7 +1,12 @@
 package com.toni.memoria;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -139,7 +144,7 @@ public class JuegoActivity extends AppCompatActivity {
                     tablero[i].setImageResource(imagenFondo);
                 }
             }
-        }, 100);
+        }, 500);
 
         for(int i = 0 ; i < NUM_CASILLAS ; i++){
             final int j = i;
@@ -147,16 +152,41 @@ public class JuegoActivity extends AppCompatActivity {
             tablero[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+
                     if(tableroBloqueado == false){
                         comprobar(j, tablero[j]);
+
                     }
                 }
             });
         }
     }
 
+    private void reproducirSonido(String accion){
+        int sonido = 0;
+        switch (accion){
+            case "jugar":
+                sonido = R.raw.click_image;
+                break;
+            case "ganar":
+                sonido = R.raw.app_src_main_res_raw_ganar;
+                break;
+            case "fallar":
+                sonido = R.raw.app_src_main_res_raw_error;
+                break;
+            default:
+                break;
+        }
+
+        final MediaPlayer sonidoClick = MediaPlayer.create(this, sonido);
+        sonidoClick.seekTo(0);
+        sonidoClick.start();
+    }
+
     private void comprobar(int i, ImageButton imageButton){
         if(imagenVista == null){
+            reproducirSonido("jugar");
             imagenVista = imageButton;
             imagenVista.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imagenVista.setImageResource(imagenes[arrayBarajado.get(i)]);
@@ -169,15 +199,20 @@ public class JuegoActivity extends AppCompatActivity {
             imageButton.setEnabled(false);
             seleccion2 = arrayBarajado.get(i);
             if(seleccion1 == seleccion2){
+                reproducirSonido("jugar");
                 imagenVista = null;
                 tableroBloqueado = false;
                 aciertos++;
                 puntuacion++;
                 txtPuntuacion.setText(getResources().getString(R.string.puntuacion) + Integer.toString(puntuacion));
-                if(aciertos == imagenes.length){
-                    Toast.makeText(this, "Has ganado", Toast.LENGTH_LONG).show();
+                if(aciertos == 1){
+                    //Toast.makeText(this, "Has ganado", Toast.LENGTH_LONG).show();
+                    reproducirSonido("ganar");
+                    //mostrarResultado();
+                    mostrarResultado2();
                 }
             }else{
+                reproducirSonido("fallar");
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -215,4 +250,29 @@ public class JuegoActivity extends AppCompatActivity {
     public void salirJuego(View view){
         finish();
     }
+
+    public void mostrarResultado(){
+        AlertDialog.Builder alertaConstructor = new AlertDialog.Builder(JuegoActivity.this);
+        alertaConstructor.setTitle(R.string.fin_juego);
+        String mensaje = getString(R.string.puntuacion) + Integer.toString(puntuacion);
+        alertaConstructor.setMessage(mensaje);
+        alertaConstructor.setPositiveButton(R.string.reiniciar, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                iniciandoJuego();
+            }
+        });
+        alertaConstructor.setNegativeButton(R.string.salir, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        alertaConstructor.show();
+    }
+
+public void mostrarResultado2(){
+        Intent intent = new Intent(this, DialogoActivity.class);
+        startActivity(intent);
+}
 }

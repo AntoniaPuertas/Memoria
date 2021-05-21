@@ -5,4 +5,6 @@
     <string name="imagen">Imagen</string>
     <string name="reiniciar">Reiniciar</string>
     <string name="puntuacion">Puntuación: </string>
+    <string name="fin_juego">Fin del juego</string>
+
 </resources>
